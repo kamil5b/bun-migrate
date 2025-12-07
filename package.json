@@ -26,7 +26,5 @@
 	"peerDependencies": {
 		"typescript": "^5.0.0"
 	},
-	"dependencies": {
-		"bun-kv": "redraskal/bun-kv#main"
-	}
+	"dependencies": {}
 }

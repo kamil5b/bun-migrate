@@ -12,14 +12,8 @@ async function setupMigrationsDir() {
 	mkdirSync(TEMP_MIGRATIONS_DIR, { recursive: true });
 }
 
-function createMigration(
-	version: string,
-	name: string,
-	upSql: string,
-	downSql?: string
-) {
-	const content =
-		downSql !== undefined ? `${upSql}\n-- migration: down\n${downSql}` : upSql;
+function createMigration(version: string, name: string, upSql: string, downSql?: string) {
+	const content = downSql !== undefined ? `${upSql}\n-- migration: down\n${downSql}` : upSql;
 	writeFileSync(join(TEMP_MIGRATIONS_DIR, `${version}_${name}.sql`), content);
 }
 
@@ -124,9 +118,7 @@ describe("migrate.ts CLI", () => {
 		expect(tableNames).not.toContain("posts");
 
 		// Verify migrations table shows only 1 applied migration
-		const migrations = db
-			.prepare("SELECT COUNT(*) as count FROM __migrations__")
-			.all() as { count: number }[];
+		const migrations = db.prepare("SELECT COUNT(*) as count FROM __migrations__").all() as { count: number }[];
 		expect(migrations[0]?.count).toBe(1);
 
 		db.close();

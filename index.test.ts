@@ -11,14 +11,8 @@ async function setupMigrationsDir() {
 	mkdirSync(TEMP_MIGRATIONS_DIR, { recursive: true });
 }
 
-async function createMigration(
-	version: string,
-	name: string,
-	upSql: string,
-	downSql?: string
-) {
-	const content =
-		downSql !== undefined ? `${upSql}\n-- migration: down\n${downSql}` : upSql;
+async function createMigration(version: string, name: string, upSql: string, downSql?: string) {
+	const content = downSql !== undefined ? `${upSql}\n-- migration: down\n${downSql}` : upSql;
 	writeFileSync(join(TEMP_MIGRATIONS_DIR, `${version}_${name}.sql`), content);
 }
 
@@ -44,9 +38,7 @@ test("up() apply migrations", async () => {
 		verbose: false,
 	});
 
-	const tables = database
-		.prepare("SELECT name FROM sqlite_master WHERE type='table'")
-		.all();
+	const tables = database.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
 	expect(tables.map((t: any) => t.name)).toContain("accounts");
 });
 
@@ -76,9 +68,7 @@ test("down() rollback migrations", async () => {
 		verbose: false,
 	});
 
-	const tables = database
-		.prepare("SELECT name FROM sqlite_master WHERE type='table'")
-		.all();
+	const tables = database.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
 	expect(tables.map((t: any) => t.name)).not.toContain("accounts");
 });
 

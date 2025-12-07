@@ -18,10 +18,12 @@ Migrations use timestamped filenames with up/down SQL:
 ```
 
 Each migration file contains:
+
 - **Up migration** (required): SQL to apply the migration
 - **Down migration** (optional): SQL to rollback the migration, separated by `-- migration: down`
 
 Example migration file:
+
 ```sql
 CREATE TABLE accounts (
 	id INTEGER PRIMARY KEY,
@@ -95,32 +97,39 @@ await up(adapter, {
 ## API
 
 ### `up(adapter, options?)`
+
 Applies all pending migrations in order.
 
 **Options:**
+
 - `migrationsPath`: Path to migrations folder (default: `./migrations`)
 - `dialect`: Database dialect - `"sqlite"` | `"postgres"` | `"mysql"` (default: `"sqlite"`)
 - `verbose`: Log migration progress (default: `true`)
 
 ### `down(adapter, steps, options?)`
+
 Rolls back the last `steps` applied migrations.
 
 **Parameters:**
+
 - `steps`: Number of migrations to rollback (default: `1`)
 
 **Options:**
+
 - `migrationsPath`: Path to migrations folder (default: `./migrations`)
 - `dialect`: Database dialect (default: `"sqlite"`)
 - `verbose`: Log rollback progress (default: `true`)
 
 ### `status(adapter, options?)`
+
 Returns status of all available migrations.
 
 **Returns:** Array of `MigrationStatus` objects:
+
 ```typescript
 {
-	version: string;        // Migration version (e.g., "20231207_120000")
-	name: string;           // Migration name
+	version: string; // Migration version (e.g., "20231207_120000")
+	name: string; // Migration name
 	appliedAt: string | null; // When applied, or null if pending
 	status: "applied" | "pending";
 }
@@ -129,13 +138,17 @@ Returns status of all available migrations.
 ## Adapters
 
 ### `createSqliteAdapter(database)`
+
 Creates an adapter for Bun's SQLite database.
 
 ### `createPostgresAdapter(client)`
+
 Creates an adapter for PostgreSQL clients.
 
 ### `createGenericAdapter(database)`
+
 Creates an adapter for any database with `exec`, `query`, `prepare`, or `run` methods.
+
 ## 4. Apply your migrations
 
 ```ts
@@ -152,7 +165,7 @@ await migrate(db);
 
 // or specify a folder
 await migrate(db, {
-  migrations: "./cool_migrations",
+	migrations: "./cool_migrations",
 });
 
 const files = await migrations("./cool_migrations");

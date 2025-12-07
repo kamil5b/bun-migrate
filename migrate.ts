@@ -139,9 +139,7 @@ async function main() {
 	} catch (error) {
 		if (error instanceof Error && error.message.includes("Cannot find module")) {
 			const missingPackage = dialect === "postgres" ? "postgres" : "mysql2";
-			console.error(
-				`❌ ${missingPackage} package not installed. Install with: bun add ${missingPackage}`
-			);
+			console.error(`❌ ${missingPackage} package not installed. Install with: bun add ${missingPackage}`);
 		} else {
 			console.error("❌ Migration failed:", error);
 		}
@@ -208,4 +206,5 @@ async function executeCommand(
 
 		console.table(table);
 	}
-}main();
+}
+main();

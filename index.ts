@@ -216,13 +216,9 @@ export async function up(
 	const availableMigrations = loadMigrations(migrationsPath);
 	const prepared = adapter.prepare(`SELECT version FROM ${MIGRATIONS_TABLE}`);
 	const allRows = await Promise.resolve(prepared.all());
-	const appliedVersions = new Set(
-		(allRows as Array<{ version: string }>).map((row) => row.version)
-	);
+	const appliedVersions = new Set((allRows as Array<{ version: string }>).map((row) => row.version));
 
-	const pending = availableMigrations.filter(
-		(m) => !appliedVersions.has(m.version)
-	);
+	const pending = availableMigrations.filter((m) => !appliedVersions.has(m.version));
 
 	if (pending.length === 0) {
 		if (verbose) console.log("✓ No pending migrations");
@@ -235,9 +231,7 @@ export async function up(
 		try {
 			const txn = adapter.transaction(() => {
 				adapter.exec(migration.up);
-				const stmt = adapter.prepare(
-					`INSERT INTO ${MIGRATIONS_TABLE} (version, name) VALUES (?, ?)`
-				);
+				const stmt = adapter.prepare(`INSERT INTO ${MIGRATIONS_TABLE} (version, name) VALUES (?, ?)`);
 				stmt.run(migration.version, migration.name);
 			});
 			await Promise.resolve(txn());
@@ -246,9 +240,7 @@ export async function up(
 				console.log(`  ✓ ${migration.version} - ${migration.name}`);
 			}
 		} catch (error) {
-			console.error(
-				`  ✗ ${migration.version} - ${migration.name}: ${error}`
-			);
+			console.error(`  ✗ ${migration.version} - ${migration.name}: ${error}`);
 			throw error;
 		}
 	}
@@ -268,9 +260,7 @@ export async function down(
 	initializeMigrationsTable(adapter, dialect);
 
 	const availableMigrations = loadMigrations(migrationsPath);
-	const prepared = adapter.prepare(
-		`SELECT version, name FROM ${MIGRATIONS_TABLE} ORDER BY version DESC LIMIT ?`
-	);
+	const prepared = adapter.prepare(`SELECT version, name FROM ${MIGRATIONS_TABLE} ORDER BY version DESC LIMIT ?`);
 	const appliedRows = await Promise.resolve(prepared.all(steps));
 	const appliedMigrations = appliedRows as Array<{ version: string; name: string }>;
 
@@ -279,25 +269,18 @@ export async function down(
 		return;
 	}
 
-	if (verbose)
-		console.log(`📥 Rolling back ${appliedMigrations.length} migration(s)...`);
+	if (verbose) console.log(`📥 Rolling back ${appliedMigrations.length} migration(s)...`);
 
 	for (const applied of appliedMigrations) {
-		const migration = availableMigrations.find(
-			(m) => m.version === applied.version
-		);
+		const migration = availableMigrations.find((m) => m.version === applied.version);
 		if (!migration || !migration.down) {
-			throw new Error(
-				`Cannot rollback ${applied.version}: down migration not defined`
-			);
+			throw new Error(`Cannot rollback ${applied.version}: down migration not defined`);
 		}
 
 		try {
 			const txn = adapter.transaction(() => {
 				adapter.exec(migration.down);
-				adapter
-					.prepare(`DELETE FROM ${MIGRATIONS_TABLE} WHERE version = ?`)
-					.run(migration.version);
+				adapter.prepare(`DELETE FROM ${MIGRATIONS_TABLE} WHERE version = ?`).run(migration.version);
 			});
 			await Promise.resolve(txn());
 
@@ -305,9 +288,7 @@ export async function down(
 				console.log(`  ✓ ${migration.version} - ${migration.name}`);
 			}
 		} catch (error) {
-			console.error(
-				`  ✗ ${migration.version} - ${migration.name}: ${error}`
-			);
+			console.error(`  ✗ ${migration.version} - ${migration.name}: ${error}`);
 			throw error;
 		}
 	}
@@ -325,9 +306,7 @@ export async function status(
 	initializeMigrationsTable(adapter, dialect);
 
 	const availableMigrations = loadMigrations(migrationsPath);
-	const prepared = adapter.prepare(
-		`SELECT version, applied_at FROM ${MIGRATIONS_TABLE} ORDER BY applied_at`
-	);
+	const prepared = adapter.prepare(`SELECT version, applied_at FROM ${MIGRATIONS_TABLE} ORDER BY applied_at`);
 	const appliedRows = await Promise.resolve(prepared.all());
 	const typedRows = appliedRows as Array<{ version: string; applied_at: string }>;
 
